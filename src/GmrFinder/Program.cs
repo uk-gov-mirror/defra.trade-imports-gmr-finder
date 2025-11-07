@@ -9,6 +9,7 @@ using GmrFinder.Processing;
 using GmrFinder.Utils;
 using GmrFinder.Utils.Http;
 using GmrFinder.Utils.Logging;
+using GmrFinder.Utils.Time;
 using Serilog;
 
 var app = CreateWebApplication(args);
@@ -56,12 +57,18 @@ static void ConfigureBuilder(WebApplicationBuilder builder)
 
     builder.Services.Configure<MongoConfig>(builder.Configuration.GetSection("Mongo"));
     builder.Services.AddSingleton<IMongoDbClientFactory, MongoDbClientFactory>();
+    builder.Services.AddSingleton<IMongoContext, MongoContext>();
 
+    builder.Services.AddGvmsApiClient();
     builder.Services.AddValidateOptions<DataEventsQueueConsumerOptions>(DataEventsQueueConsumerOptions.SectionName);
     builder.Services.AddSqsClient(builder.Configuration);
-    builder.Services.AddSingleton<IPollingService, PollingService>();
+
     builder.Services.AddSingleton<ICustomsDeclarationProcessor, CustomsDeclarationProcessor>();
     builder.Services.AddSingleton<IImportPreNotificationProcessor, ImportPreNotificationProcessor>();
+    builder.Services.AddSingleton<IGmrFinderClock, GmrFinderClock>();
+
+    builder.Services.AddValidateOptions<PollingServiceOptions>(PollingServiceOptions.SectionName);
+    builder.Services.AddSingleton<IPollingService, PollingService>();
     builder.Services.AddHostedService<DataEventsQueueConsumer>();
 
     builder.Services.AddHealthChecks();

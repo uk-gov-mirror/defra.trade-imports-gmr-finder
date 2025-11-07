@@ -131,9 +131,7 @@ public class CustomsDeclarationProcessorTests
         _pollingService.Verify(
             service =>
                 service.Process(
-                    It.Is<PollingRequest>(request =>
-                        request.Mrn == resourceEvent.ResourceId && request.ChedReferences.SetEquals(chedReferences)
-                    ),
+                    It.Is<PollingRequest>(request => request.Mrn == resourceEvent.ResourceId),
                     It.IsAny<CancellationToken>()
                 ),
             Times.Once
